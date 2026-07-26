@@ -1,0 +1,27 @@
+name: pihole-lab
+
+services:
+  pihole:
+    image: pihole/pihole:${PIHOLE_VERSION:-2026.05.0}
+    container_name: pihole
+    hostname: pihole
+    restart: unless-stopped
+
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "${PIHOLE_WEB_PORT:-8080}:80/tcp"
+
+    environment:
+      TZ: "${TZ:-America/Sao_Paulo}"
+      FTLCONF_webserver_api_password: "${PIHOLE_PASSWORD:?Defina PIHOLE_PASSWORD no arquivo .env}"
+      FTLCONF_dns_listeningMode: "ALL"
+
+    volumes:
+      - ./data/etc-pihole:/etc/pihole
+
+    cap_add:
+      - SYS_NICE
+
+    security_opt:
+      - no-new-privileges:true
